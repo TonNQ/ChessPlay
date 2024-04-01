@@ -6,11 +6,3 @@
   height: 640px;
   background-color: blue;
 }
-
-#checkboard .black-tile {
-  background-color: #779556;
-}
-
-#checkboard .white-tile {
-  background-color: #ebecd0;
-}

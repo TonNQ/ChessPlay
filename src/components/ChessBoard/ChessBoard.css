@@ -1,16 +1,8 @@
-#checkboard {
+#chess-board {
   display: grid;
   grid-template-columns: repeat(8, 80px);
   grid-template-rows: repeat(8, 80px);
   width: 640px;
   height: 640px;
   background-color: blue;
-}
-
-#checkboard .black-tile {
-  background-color: #779556;
-}
-
-#checkboard .white-tile {
-  background-color: #ebecd0;
 }

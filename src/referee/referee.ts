@@ -12,6 +12,26 @@ export default class Referee {
     return piece !== undefined && piece.teamType !== team
   }
 
+  isEnPassantMove(
+    px: number,
+    py: number,
+    x: number,
+    y: number,
+    type: PieceType,
+    team: TeamType,
+    boardState: Piece[]
+  ): boolean {
+    if (type === PieceType.PAWN) {
+      if ((px === x + 1 || px === x - 1) && y - py === 1) { // right or left
+        const piece = boardState.find((p) => p.x === x && p.y === y - 1 && p.enPassant)
+        if (piece) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
   // check if the move is valid
   isValidMove(px: number, py: number, x: number, y: number, type: PieceType, team: TeamType, boardState: Piece[]) {
     // console.log('Previous x: ' + px + ' Previous y: ' + py + ' New x: ' + x + ' New y: ' + y + ' Type: ' + type);
@@ -31,7 +51,7 @@ export default class Referee {
           }
         }
         // ATTACKMENT LOGIC
-        else if (px === x + 1 || px === x - 1) {
+        else if (px === x + 1 || px === x - 1) { // right or left
           if (y - py === 1) {
             if (this.tileIsOccupiedByOpponent(x, y, team, boardState)) {
               return true

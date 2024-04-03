@@ -12,6 +12,7 @@ export interface Piece {
   y: number
   type: PieceType
   teamType: TeamType
+  enPassant?: boolean
 }
 
 export enum PieceType {
@@ -139,18 +140,56 @@ export default function ChessBoard() {
       if (currentPiece) {
         const validMove = referee.isValidMove(gridX, gridY, x, y, currentPiece?.type, currentPiece?.teamType, pieces)
 
-        if (validMove) {
-          // update the piece position
-          // if piece is attacked, remove the piece
+        const isEnPassantMove = referee.isEnPassantMove(
+          gridX,
+          gridY,
+          x,
+          y,
+          currentPiece.type,
+          currentPiece.teamType,
+          pieces
+        )
+
+        if (isEnPassantMove) {
+          // if the move is en passant, remove the piece that is in the bottom of moved piece
 
           // result ==> arrays of updated pieces; piece ==> handling piece
           const updatedPieces = pieces.reduce((results, piece) => {
-            if (piece.x === currentPiece.x && piece.y === currentPiece.y) {
+            if (piece.x === gridX && piece.y === gridY) {
+              piece.enPassant = false
+              piece.x = x
+              piece.y = y
+              results.push(piece)
+            } else if (!(piece.x === x && piece.y === y - 1)) {
+              if (piece.type == PieceType.PAWN) {
+                piece.enPassant = false
+              }
+              results.push(piece)
+            }
+
+            return results
+          }, [] as Piece[])
+
+          setPieces(updatedPieces)
+        } else if (validMove) {
+          // update the piece position
+          // if piece is attacked, remove the piece
+          const updatedPieces = pieces.reduce((results, piece) => {
+            if (piece.x === gridX && piece.y === gridY) {
+              if (Math.abs(gridY - y) === 2 && piece.type === PieceType.PAWN) {
+                // SPECIAL MOVE: EN PASSANT
+                piece.enPassant = true
+              } else {
+                piece.enPassant = false
+              }
               // if the piece is current piece, set the new position and push to the result
               piece.x = x
               piece.y = y
               results.push(piece)
             } else if (!(piece.x === x && piece.y === y)) {
+              if (piece.type === PieceType.PAWN) {
+                piece.enPassant = false
+              }
               // if the piece is not attacked, push to the result
               results.push(piece)
             }

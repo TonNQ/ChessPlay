@@ -11,7 +11,7 @@ export default function Tile({ image, number_row, number_column }: Props) {
     return (
       <div className='tile black-tile'>
         {image && <div style={{ backgroundImage: `url(${image})` }} className='chess-piece'></div>}
-        {/* = {image != null && <div style={{ backgroundImage: `url(${image})` }} className='chess-piece'></div>} */}
+        {/* {image != null && <div style={{ backgroundImage: `url(${image})` }} className='chess-piece'></div>} */}
       </div>
     )
   } else {

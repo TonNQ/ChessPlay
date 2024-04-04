@@ -1,4 +1,7 @@
 #chess-board {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: grid;
   grid-template-columns: repeat(8, 80px);
   grid-template-rows: repeat(8, 80px);

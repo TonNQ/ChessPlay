@@ -4,11 +4,11 @@
 }
 
 .black-tile {
-  background-color: #779556;
+  background: radial-gradient(circle, #2d3131, #1d1e20);
 }
 
 .white-tile {
-  background-color: #ebecd0;
+  background: radial-gradient(circle, #a0a2a4, #9ea0a1);
 }
 
 .tile .chess-piece {

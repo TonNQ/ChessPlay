@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -69,4 +70,10 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.pixel-font {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Tile from '../Tile/Tile'
 import './ChessBoard.css'
 import Referee from 'src/referee/referee.ts'
@@ -108,6 +108,8 @@ export default function ChessBoard() {
   const [activePosition, setActivePosition] = useState<Position | null>(null)
   const [possiblePosition, setPossiblePosition] = useState<Position[]>([])
   const [pieces, setPieces] = useState<Piece[]>(initialPieces)
+  const [promotionPawn, setPromotionPawn] = useState<Piece | null>(null)
+  const promotionRef = useRef<HTMLDivElement>(null)
   const referee = new Referee()
 
   const handleClick = (i: number, j: number) => {
@@ -157,6 +159,13 @@ export default function ChessBoard() {
               }
               // if the piece is current piece, set the new position and push to the result
               piece.position = new_position.copy()
+
+              const promotionRow = piece.teamType === TeamType.USERTEAM ? 7 : 0
+              if (piece.position.y === promotionRow && piece.type === PieceType.PAWN) {
+                promotionRef.current?.classList.remove('hidden')
+                setPromotionPawn(piece)
+              }
+
               results.push(piece)
             } else if (!piece.position.samePosition(new_position)) {
               if (piece.type === PieceType.PAWN) {
@@ -211,9 +220,63 @@ export default function ChessBoard() {
     }
   }
 
+  function promotePawn(pieceType: PieceType) {
+    if (promotionPawn === null) {
+      return
+    }
+
+    const updatedPieces = pieces.reduce((results, piece) => {
+      if (piece.position.samePosition(promotionPawn.position)) {
+        piece.type = pieceType
+        const color = piece.teamType === TeamType.USERTEAM ? 'w' : 'b'
+        piece.image = `assets/images/${PieceType[pieceType].toLowerCase()}_${color}.png`
+      }
+
+      results.push(piece)
+      return results
+    }, [] as Piece[])
+
+    setPieces(updatedPieces)
+
+    promotionRef.current?.classList.add('hidden')
+  }
+
   return (
-    <div role='button' tabIndex={0} id='chess-board'>
-      {board}
-    </div>
+    <>
+      <div id='pawn-promotion-modal' className='hidden' ref={promotionRef}>
+        <div className='modal-body'>
+          <header className='modal-header'>Choose your promotion piece:</header>
+          <div className='modal-container'>
+            <img
+              onClick={() => promotePawn(PieceType.QUEEN)}
+              aria-hidden='true'
+              src='assets/images/queen-w.svg'
+              alt='queen'
+            />
+            <img
+              onClick={() => promotePawn(PieceType.ROOK)}
+              aria-hidden='true'
+              src='assets/images/rook-w.svg'
+              alt='rook'
+            />
+            <img
+              onClick={() => promotePawn(PieceType.BISHOP)}
+              aria-hidden='true'
+              src='assets/images/bishop-w.svg'
+              alt='bishop'
+            />
+            <img
+              onClick={() => promotePawn(PieceType.KNIGHT)}
+              aria-hidden='true'
+              src='assets/images/knight-w.svg'
+              alt='knight'
+            />
+          </div>
+        </div>
+      </div>
+      <div role='button' tabIndex={0} id='chess-board'>
+        {board}
+      </div>
+    </>
   )
 }

@@ -13,4 +13,8 @@ export class Position {
   copy(): Position {
     return new Position(this.x, this.y)
   }
+
+  outOfBoard(): boolean {
+    return this.x < 0 || this.x > 7 || this.y < 0 || this.y > 7
+  }
 }

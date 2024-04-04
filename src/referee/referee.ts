@@ -4,12 +4,12 @@ import { Position } from 'src/models/Position'
 export default class Referee {
   // check if tile is occupied
   tileIsOccupied(p: Position, boardState: Piece[]): boolean {
-    const piece = boardState.find((piece) => piece.position.x === p.x && piece.position.y === p.y)
+    const piece = boardState.find((piece) => piece.position.samePosition(p))
     return piece !== undefined
   }
 
   tileIsOccupiedByOpponent(p: Position, team: TeamType, boardState: Piece[]): boolean {
-    const piece = boardState.find((piece) => piece.position.x === p.x && piece.position.y === p.y)
+    const piece = boardState.find((piece) => piece.position.samePosition(p))
     return piece !== undefined && piece.teamType !== team
   }
 
@@ -93,5 +93,27 @@ export default class Referee {
       }
     }
     return false
+  }
+  getPossibleKnightMoves(knight: Piece, boardState: Piece[]): Position[] {
+    const possibleMoves: Position[] = []
+    for (let i = -1; i < 2; i += 2) {
+      for (let j = -1; j < 2; j += 2) {
+        const horizontalMove = new Position(knight.position.x + i * 2, knight.position.y + j)
+        const verticalMove = new Position(knight.position.x + j, knight.position.y + i * 2)
+        if (
+          !horizontalMove.outOfBoard() &&
+          this.tileIsEmptyOrOccupiedByOpponent(horizontalMove, knight.teamType, boardState)
+        ) {
+          possibleMoves.push(verticalMove)
+        }
+        if (
+          !verticalMove.outOfBoard() &&
+          this.tileIsEmptyOrOccupiedByOpponent(verticalMove, knight.teamType, boardState)
+        ) {
+          possibleMoves.push(horizontalMove)
+        }
+      }
+    }
+    return possibleMoves
   }
 }

@@ -167,6 +167,43 @@ export default class Referee {
           }
         }
       }
+    } else if (type === PieceType.ROOK) {
+      if (team === TeamType.USERTEAM) {
+        // horizontal move
+        if (old_pos.x === new_pos.x) {
+          const multipler = new_pos.y - old_pos.y < 0 ? -1 : 1
+          for (let i = 1; i < 8; i++) {
+            const passedPosition: Position = new Position(old_pos.x, old_pos.y + i * multipler)
+            if (passedPosition.samePosition(new_pos)) {
+              if (this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)) {
+                return true
+              }
+            } else {
+              if (this.tileIsOccupied(passedPosition, boardState)) {
+                break
+              }
+            }
+          }
+        }
+
+        // vertical move
+        if (old_pos.y === new_pos.y) {
+          const multipler = new_pos.x - old_pos.x < 0 ? -1 : 1
+          for (let i = 1; i < 8; i++) {
+            const passedPosition: Position = new Position(old_pos.x + i * multipler, old_pos.y)
+            if (passedPosition.samePosition(new_pos)) {
+              if (this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)) {
+                return true
+              }
+            } else {
+              if (this.tileIsOccupied(passedPosition, boardState)) {
+                break
+              }
+            }
+          }
+        }
+      }
+      return false
     } else if (type === PieceType.QUEEN) {
       if (team === TeamType.USERTEAM) {
         const dx = new_pos.x - old_pos.x < 0 ? -1 : new_pos.x - old_pos.x > 0 ? 1 : 0
@@ -183,6 +220,19 @@ export default class Referee {
               break
             }
           }
+        }
+      }
+    } else if (type === PieceType.KING) {
+      if (team == TeamType.USERTEAM) {
+        const dx = new_pos.x - old_pos.x < 0 ? -1 : new_pos.x - old_pos.x > 0 ? 1 : 0
+        const dy = new_pos.y - old_pos.y < 0 ? -1 : new_pos.y - old_pos.y > 0 ? 1 : 0
+
+        const checkPosition = new Position(old_pos.x + dx, old_pos.y + dy)
+        if (
+          checkPosition.samePosition(new_pos) &&
+          this.tileIsEmptyOrOccupiedByOpponent(checkPosition, team, boardState)
+        ) {
+          return true
         }
       }
     }
@@ -223,7 +273,7 @@ export default class Referee {
     } else if (!this.tileIsOccupied(upperRightAttack, boardState)) {
       const rightPiece = boardState.find((p) => p.position.samePosition(rightPosition))
       if (rightPiece != null && this.isEnPassantMove(pawn.position, rightPosition, PieceType.PAWN, boardState)) {
-        possibleMoves.push(upperRightAttack);
+        possibleMoves.push(upperRightAttack)
       }
     }
 
@@ -315,6 +365,79 @@ export default class Referee {
         if (!this.tileIsOccupied(destinationPosition, boardState)) {
           possibleMoves.push(destinationPosition)
         } else if (this.tileIsOccupiedByOpponent(destinationPosition, bishop.teamType, boardState)) {
+          possibleMoves.push(destinationPosition)
+          break
+        } else {
+          break
+        }
+      }
+    }
+    return possibleMoves
+  }
+
+  getPossibleRookMoves(rook: Piece, boardState: Piece[]): Position[] {
+    const possibleMoves: Position[] = []
+
+    // Left
+    for (let i = 1; i < 8; i++) {
+      const destinationPosition = new Position(rook.position.x - i, rook.position.y)
+      if (destinationPosition.outOfBoard()) {
+        break
+      } else {
+        if (!this.tileIsOccupied(destinationPosition, boardState)) {
+          possibleMoves.push(destinationPosition)
+        } else if (this.tileIsOccupiedByOpponent(destinationPosition, rook.teamType, boardState)) {
+          possibleMoves.push(destinationPosition)
+          break
+        } else {
+          break
+        }
+      }
+    }
+
+    // Right
+    for (let i = 1; i < 8; i++) {
+      const destinationPosition = new Position(rook.position.x + i, rook.position.y)
+      if (destinationPosition.outOfBoard()) {
+        break
+      } else {
+        if (!this.tileIsOccupied(destinationPosition, boardState)) {
+          possibleMoves.push(destinationPosition)
+        } else if (this.tileIsOccupiedByOpponent(destinationPosition, rook.teamType, boardState)) {
+          possibleMoves.push(destinationPosition)
+          break
+        } else {
+          break
+        }
+      }
+    }
+
+    // Top
+    for (let i = 1; i < 8; i++) {
+      const destinationPosition = new Position(rook.position.x, rook.position.y + i)
+      if (destinationPosition.outOfBoard()) {
+        break
+      } else {
+        if (!this.tileIsOccupied(destinationPosition, boardState)) {
+          possibleMoves.push(destinationPosition)
+        } else if (this.tileIsOccupiedByOpponent(destinationPosition, rook.teamType, boardState)) {
+          possibleMoves.push(destinationPosition)
+          break
+        } else {
+          break
+        }
+      }
+    }
+
+    // Bottom
+    for (let i = 1; i < 8; i++) {
+      const destinationPosition = new Position(rook.position.x, rook.position.y - i)
+      if (destinationPosition.outOfBoard()) {
+        break
+      } else {
+        if (!this.tileIsOccupied(destinationPosition, boardState)) {
+          possibleMoves.push(destinationPosition)
+        } else if (this.tileIsOccupiedByOpponent(destinationPosition, rook.teamType, boardState)) {
           possibleMoves.push(destinationPosition)
           break
         } else {
@@ -460,6 +583,24 @@ export default class Referee {
           break
         } else {
           break
+        }
+      }
+    }
+
+    return possibleMoves
+  }
+
+  getPossibleKingMoves(king: Piece, boardState: Piece[]): Position[] {
+    const possibleMoves: Position[] = []
+
+    for (let i = -1; i < 2; i++) {
+      for (let j = -1; j < 2; j++) {
+        const destinationPosition = new Position(king.position.x + i, king.position.y + j)
+        if (
+          !destinationPosition.outOfBoard() &&
+          this.tileIsEmptyOrOccupiedByOpponent(destinationPosition, king.teamType, boardState)
+        ) {
+          possibleMoves.push(destinationPosition)
         }
       }
     }

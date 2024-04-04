@@ -216,7 +216,6 @@ export default function ChessBoard() {
 
           setPieces(updatedPieces)
         } else if (validMove) {
-          console.log('Valid move')
           // update the piece position
           // if piece is attacked, remove the piece
           const updatedPieces = pieces.reduce((results, piece) => {
@@ -244,7 +243,6 @@ export default function ChessBoard() {
 
           setPieces(updatedPieces)
         } else {
-          console.log('Invalid move')
           // reset the piece position
           activePiece.style.position = 'relative'
           activePiece.style.removeProperty('top')

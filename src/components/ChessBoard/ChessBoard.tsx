@@ -145,6 +145,7 @@ export default function ChessBoard() {
 
     if (activePiece && chessboard) {
       // find the minimum and maximum x and y coordinates
+      // console.log(chessboard.offsetLeft, chessboard.offsetTop, chessboard.clientWidth, chessboard.clientHeight)
       const minX = chessboard.offsetLeft - 20
       const minY = chessboard.offsetTop - 20
       const maxX = chessboard.offsetLeft + chessboard.clientWidth - 60
@@ -181,7 +182,6 @@ export default function ChessBoard() {
       const currentGridPosition = new Position(x, y)
 
       const currentPiece = pieces.find((piece) => piece.position.samePosition(grid))
-      // const attackPiece = pieces.find((piece) => piece.x === x && piece.y === y)
 
       if (currentPiece) {
         const validMove = referee.isValidMove(
@@ -216,6 +216,7 @@ export default function ChessBoard() {
 
           setPieces(updatedPieces)
         } else if (validMove) {
+          console.log('Valid move')
           // update the piece position
           // if piece is attacked, remove the piece
           const updatedPieces = pieces.reduce((results, piece) => {
@@ -243,11 +244,19 @@ export default function ChessBoard() {
 
           setPieces(updatedPieces)
         } else {
+          console.log('Invalid move')
           // reset the piece position
           activePiece.style.position = 'relative'
           activePiece.style.removeProperty('top')
           activePiece.style.removeProperty('left')
         }
+      }
+      // Make sure if currentPiece is null, the piece is not moved
+      else {
+        // reset the piece position
+        activePiece.style.position = 'relative'
+        activePiece.style.removeProperty('top')
+        activePiece.style.removeProperty('left')
       }
 
       setActivePiece(null)

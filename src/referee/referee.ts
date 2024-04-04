@@ -34,8 +34,6 @@ export default class Referee {
 
   // check if the move is valid
   isValidMove(old_pos: Position, new_pos: Position, type: PieceType, team: TeamType, boardState: Piece[]) {
-    // console.log('Previous x: ' + px + ' Previous y: ' + py + ' New x: ' + x + ' New y: ' + y + ' Type: ' + type);
-    // console.log('Team: ' + team)
     if (type === PieceType.PAWN) {
       if (team === TeamType.USERTEAM) {
         // MOVEMENT LOGIC
@@ -96,7 +94,6 @@ export default class Referee {
           // Top right
           if (new_pos.x > old_pos.x && new_pos.y > old_pos.y) {
             const checkPosition = new Position(old_pos.x + i, old_pos.y + i)
-            console.log(checkPosition)
             if (checkPosition.outOfBoard()) {
               break
             } else {
@@ -173,6 +170,48 @@ export default class Referee {
     }
     return false
   }
+
+  getPossiblePawnMoves = (pawn: Piece, boardState: Piece[]): Position[] => {
+    const possibleMoves: Position[] = []
+
+    const specialRow = 1
+
+    const normalMove = new Position(pawn.position.x, pawn.position.y + 1)
+    const specialMove = new Position(normalMove.x, normalMove.y + 1)
+    const upperLeftAttack = new Position(pawn.position.x - 1, pawn.position.y + 1)
+    const upperRightAttack = new Position(pawn.position.x + 1, pawn.position.y + 1)
+    const leftPosition = new Position(pawn.position.x - 1, pawn.position.y)
+    const rightPosition = new Position(pawn.position.x + 1, pawn.position.y)
+
+    if (!this.tileIsOccupied(normalMove, boardState)) {
+      possibleMoves.push(normalMove)
+
+      if (pawn.position.y === specialRow && !this.tileIsOccupied(specialMove, boardState)) {
+        possibleMoves.push(specialMove)
+      }
+    }
+
+    if (this.tileIsOccupiedByOpponent(upperLeftAttack, pawn.teamType, boardState)) {
+      possibleMoves.push(upperLeftAttack)
+    } else if (!this.tileIsOccupied(upperLeftAttack, boardState)) {
+      const leftPiece = boardState.find((p) => p.position.samePosition(leftPosition))
+      if (leftPiece != null && this.isEnPassantMove(pawn.position, leftPosition, PieceType.PAWN, boardState)) {
+        possibleMoves.push(upperLeftAttack)
+      }
+    }
+
+    if (this.tileIsOccupiedByOpponent(upperRightAttack, pawn.teamType, boardState)) {
+      possibleMoves.push(upperRightAttack)
+    } else if (!this.tileIsOccupied(upperRightAttack, boardState)) {
+      const rightPiece = boardState.find((p) => p.position.samePosition(rightPosition))
+      if (rightPiece != null && this.isEnPassantMove(pawn.position, rightPosition, PieceType.PAWN, boardState)) {
+        possibleMoves.push(upperRightAttack);
+      }
+    }
+
+    return possibleMoves
+  }
+
   getPossibleKnightMoves(knight: Piece, boardState: Piece[]): Position[] {
     const possibleMoves: Position[] = []
     for (let i = -1; i < 2; i += 2) {

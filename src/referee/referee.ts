@@ -607,4 +607,22 @@ export default class Referee {
 
     return possibleMoves
   }
+
+  getPossibleMoves(piece: Piece, boardState: Piece[]): Position[] {
+    if (piece.type === PieceType.BISHOP) {
+      return this.getPossibleBishopMoves(piece, boardState)
+    } else if (piece.type === PieceType.KING) {
+      return this.getPossibleKingMoves(piece, boardState)
+    } else if (piece.type === PieceType.KNIGHT) {
+      return this.getPossibleKnightMoves(piece, boardState)
+    } else if (piece.type === PieceType.PAWN) {
+      return this.getPossiblePawnMoves(piece, boardState)
+    } else if (piece.type === PieceType.QUEEN) {
+      return this.getPossibleQueenMoves(piece, boardState)
+    } else if (piece.type === PieceType.ROOK) {
+      return this.getPossibleRookMoves(piece, boardState)
+    } else {
+      return []
+    }
+  }
 }

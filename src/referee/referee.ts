@@ -222,6 +222,19 @@ export default class Referee {
           }
         }
       }
+    } else if (type === PieceType.KING) {
+      if (team == TeamType.USERTEAM) {
+        const dx = new_pos.x - old_pos.x < 0 ? -1 : new_pos.x - old_pos.x > 0 ? 1 : 0
+        const dy = new_pos.y - old_pos.y < 0 ? -1 : new_pos.y - old_pos.y > 0 ? 1 : 0
+
+        const checkPosition = new Position(old_pos.x + dx, old_pos.y + dy)
+        if (
+          checkPosition.samePosition(new_pos) &&
+          this.tileIsEmptyOrOccupiedByOpponent(checkPosition, team, boardState)
+        ) {
+          return true
+        }
+      }
     }
     return false
   }
@@ -570,6 +583,24 @@ export default class Referee {
           break
         } else {
           break
+        }
+      }
+    }
+
+    return possibleMoves
+  }
+
+  getPossibleKingMoves(king: Piece, boardState: Piece[]): Position[] {
+    const possibleMoves: Position[] = []
+
+    for (let i = -1; i < 2; i++) {
+      for (let j = -1; j < 2; j++) {
+        const destinationPosition = new Position(king.position.x + i, king.position.y + j)
+        if (
+          !destinationPosition.outOfBoard() &&
+          this.tileIsEmptyOrOccupiedByOpponent(destinationPosition, king.teamType, boardState)
+        ) {
+          possibleMoves.push(destinationPosition)
         }
       }
     }

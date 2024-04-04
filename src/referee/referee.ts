@@ -290,13 +290,13 @@ export default class Referee {
           !horizontalMove.outOfBoard() &&
           this.tileIsEmptyOrOccupiedByOpponent(horizontalMove, knight.teamType, boardState)
         ) {
-          possibleMoves.push(verticalMove)
+          possibleMoves.push(horizontalMove)
         }
         if (
           !verticalMove.outOfBoard() &&
           this.tileIsEmptyOrOccupiedByOpponent(verticalMove, knight.teamType, boardState)
         ) {
-          possibleMoves.push(horizontalMove)
+          possibleMoves.push(verticalMove)
         }
       }
     }

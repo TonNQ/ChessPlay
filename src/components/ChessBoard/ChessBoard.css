@@ -9,3 +9,55 @@
   height: 640px;
   background-color: blue;
 }
+
+#pawn-promotion-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+#pawn-promotion-modal.hidden {
+  display: none;
+}
+
+#pawn-promotion-modal .modal-header {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  font-style: italic;
+  margin-top: 5%;
+}
+
+#pawn-promotion-modal .modal-body {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  width: 662px;
+  height: 300px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#pawn-promotion-modal .modal-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: calc(90% - 100px);
+}
+
+#pawn-promotion-modal .modal-container > img {
+  height: 130px;
+  width: 130px;
+  border-radius: 50%;
+  padding: 20px;
+}
+
+#pawn-promotion-modal .modal-container > img:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}

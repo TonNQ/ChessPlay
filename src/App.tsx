@@ -1,5 +1,6 @@
 import './App.css'
 import ChessBoard from './components/ChessBoard/ChessBoard'
+import Clock from './components/Clock/Clock'
 import User from './components/User/User'
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
           </div>
         </div>
         <div className='min-w-[666px] flex-1 flex-grow'>
-          <div className='bg-darkGray relative h-[666px] w-[666px] border-[2px] border-black/20'>
+          <div className='relative h-[666px] w-[666px] border-[2px] border-black/20 bg-darkGray'>
             <div className='absolute left-0 top-0 flex h-[640px] w-[26px] flex-col items-center justify-between bg-none'>
               {Array.from({ length: 8 }, (_, index) => (
                 <div
@@ -38,15 +39,15 @@ function App() {
         <div className='flex-0 min-w-[300px] px-[25px]'>
           <div className='flex h-full flex-col-reverse items-center'>
             <div className='flex w-full flex-row justify-between'>
-              <button className='bg-lightBrown/50 hover:bg-lightBrown/90 pixel-font w-[120px] border-none px-3 py-2 text-xl uppercase text-white'>
+              <button className='pixel-font w-[120px] border-none bg-lightBrown/50 px-3 py-2 text-xl uppercase text-white hover:bg-lightBrown/90'>
                 reset
               </button>
-              <button className='bg-lightBrown/50 hover:bg-lightBrown/90 pixel-font w-[120px] border-none px-3 py-2 text-xl uppercase text-white'>
+              <button className='pixel-font w-[120px] border-none bg-lightBrown/50 px-3 py-2 text-xl uppercase text-white hover:bg-lightBrown/90'>
                 stop
               </button>
             </div>
             <div className='flex w-full flex-row'>
-              <button className='bg-lightBrown/50 hover:bg-lightBrown/90 pixel-font mb-2 w-full border-none px-3 py-2 text-xl uppercase text-white'>
+              <button className='pixel-font mb-2 w-full border-none bg-lightBrown/50 px-3 py-2 text-xl uppercase text-white hover:bg-lightBrown/90'>
                 surrender
               </button>
             </div>
@@ -84,9 +85,7 @@ function App() {
                 <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
               </div>
             </div>
-            <div className='pixel-font flex w-full flex-row items-center justify-center py-2 text-7xl text-white/50'>
-              <span className='mr-2'>0</span> : <span className='ml-2'>00</span>
-            </div>
+            <Clock />
           </div>
         </div>
       </div>

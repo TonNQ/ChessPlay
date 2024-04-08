@@ -35,29 +35,27 @@ export default class Referee {
   // check if the move is valid
   isValidMove(old_pos: Position, new_pos: Position, type: PieceType, team: TeamType, boardState: Piece[]) {
     if (type === PieceType.PAWN) {
-      if (team === TeamType.USERTEAM) {
-        // MOVEMENT LOGIC
-        if (old_pos.x === new_pos.x) {
-          if (new_pos.y - old_pos.y === 1) {
-            if (!this.tileIsOccupied(new_pos, boardState)) {
-              return true
-            }
-          } else if (old_pos.y == 1 && new_pos.y - old_pos.y === 2) {
-            if (
-              !this.tileIsOccupied(new_pos, boardState) &&
-              !this.tileIsOccupied(new Position(new_pos.x, new_pos.y - 1), boardState)
-            ) {
-              return true
-            }
+      // MOVEMENT LOGIC
+      if (old_pos.x === new_pos.x) {
+        if (new_pos.y - old_pos.y === 1) {
+          if (!this.tileIsOccupied(new_pos, boardState)) {
+            return true
+          }
+        } else if (old_pos.y == 1 && new_pos.y - old_pos.y === 2) {
+          if (
+            !this.tileIsOccupied(new_pos, boardState) &&
+            !this.tileIsOccupied(new Position(new_pos.x, new_pos.y - 1), boardState)
+          ) {
+            return true
           }
         }
-        // ATTACKMENT LOGIC
-        else if (old_pos.x === new_pos.x + 1 || old_pos.x === new_pos.x - 1) {
-          // right or left
-          if (new_pos.y - old_pos.y === 1) {
-            if (this.tileIsOccupiedByOpponent(new_pos, team, boardState)) {
-              return true
-            }
+      }
+      // ATTACKMENT LOGIC
+      else if (old_pos.x === new_pos.x + 1 || old_pos.x === new_pos.x - 1) {
+        // right or left
+        if (new_pos.y - old_pos.y === 1) {
+          if (this.tileIsOccupiedByOpponent(new_pos, team, boardState)) {
+            return true
           }
         }
       }
@@ -74,169 +72,160 @@ export default class Referee {
       //     }
       //   }
     } else if (type === PieceType.KNIGHT) {
-      if (team === TeamType.USERTEAM) {
-        for (let i = -1; i < 2; i += 2) {
-          for (let j = -1; j < 2; j += 2) {
-            if (
-              (new_pos.y - old_pos.y == 2 * i && new_pos.x - old_pos.x == j) ||
-              (new_pos.x - old_pos.x == 2 * i && new_pos.y - old_pos.y == j)
-            ) {
-              if (this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)) {
-                return true
-              }
+      for (let i = -1; i < 2; i += 2) {
+        for (let j = -1; j < 2; j += 2) {
+          if (
+            (new_pos.y - old_pos.y == 2 * i && new_pos.x - old_pos.x == j) ||
+            (new_pos.x - old_pos.x == 2 * i && new_pos.y - old_pos.y == j)
+          ) {
+            if (this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)) {
+              return true
             }
           }
         }
       }
     } else if (type === PieceType.BISHOP) {
-      if (team === TeamType.USERTEAM) {
-        for (let i = 1; i < 8; i++) {
-          // Top right
-          if (new_pos.x > old_pos.x && new_pos.y > old_pos.y) {
-            const checkPosition = new Position(old_pos.x + i, old_pos.y + i)
-            if (checkPosition.outOfBoard()) {
-              break
+      for (let i = 1; i < 8; i++) {
+        // Top right
+        if (new_pos.x > old_pos.x && new_pos.y > old_pos.y) {
+          const checkPosition = new Position(old_pos.x + i, old_pos.y + i)
+          if (checkPosition.outOfBoard()) {
+            break
+          } else {
+            if (
+              checkPosition.samePosition(new_pos) &&
+              this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)
+            ) {
+              return true
             } else {
-              if (
-                checkPosition.samePosition(new_pos) &&
-                this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)
-              ) {
-                return true
-              } else {
-                if (this.tileIsOccupied(checkPosition, boardState)) {
-                  break
-                }
+              if (this.tileIsOccupied(checkPosition, boardState)) {
+                break
               }
             }
           }
-          // Top left
-          if (new_pos.x < old_pos.x && new_pos.y > old_pos.y) {
-            const checkPosition = new Position(old_pos.x - i, old_pos.y + i)
-            if (checkPosition.outOfBoard()) {
-              break
+        }
+        // Top left
+        if (new_pos.x < old_pos.x && new_pos.y > old_pos.y) {
+          const checkPosition = new Position(old_pos.x - i, old_pos.y + i)
+          if (checkPosition.outOfBoard()) {
+            break
+          } else {
+            if (
+              checkPosition.samePosition(new_pos) &&
+              this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)
+            ) {
+              return true
             } else {
-              if (
-                checkPosition.samePosition(new_pos) &&
-                this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)
-              ) {
-                return true
-              } else {
-                if (this.tileIsOccupied(checkPosition, boardState)) {
-                  break
-                }
+              if (this.tileIsOccupied(checkPosition, boardState)) {
+                break
               }
             }
           }
+        }
 
-          // Bottom right
-          if (new_pos.x > old_pos.x && new_pos.y < old_pos.y) {
-            const checkPosition = new Position(old_pos.x + i, old_pos.y - i)
-            if (checkPosition.outOfBoard()) {
-              break
+        // Bottom right
+        if (new_pos.x > old_pos.x && new_pos.y < old_pos.y) {
+          const checkPosition = new Position(old_pos.x + i, old_pos.y - i)
+          if (checkPosition.outOfBoard()) {
+            break
+          } else {
+            if (
+              checkPosition.samePosition(new_pos) &&
+              this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)
+            ) {
+              return true
             } else {
-              if (
-                checkPosition.samePosition(new_pos) &&
-                this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)
-              ) {
-                return true
-              } else {
-                if (this.tileIsOccupied(checkPosition, boardState)) {
-                  break
-                }
+              if (this.tileIsOccupied(checkPosition, boardState)) {
+                break
               }
             }
           }
+        }
 
-          // Bottom left
-          if (new_pos.x < old_pos.x && new_pos.y < old_pos.y) {
-            const checkPosition = new Position(old_pos.x - i, old_pos.y - i)
-            if (checkPosition.outOfBoard()) {
-              break
+        // Bottom left
+        if (new_pos.x < old_pos.x && new_pos.y < old_pos.y) {
+          const checkPosition = new Position(old_pos.x - i, old_pos.y - i)
+          if (checkPosition.outOfBoard()) {
+            break
+          } else {
+            if (
+              checkPosition.samePosition(new_pos) &&
+              this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)
+            ) {
+              return true
             } else {
-              if (
-                checkPosition.samePosition(new_pos) &&
-                this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)
-              ) {
-                return true
-              } else {
-                if (this.tileIsOccupied(checkPosition, boardState)) {
-                  break
-                }
+              if (this.tileIsOccupied(checkPosition, boardState)) {
+                break
               }
             }
           }
         }
       }
     } else if (type === PieceType.ROOK) {
-      if (team === TeamType.USERTEAM) {
-        // horizontal move
-        if (old_pos.x === new_pos.x) {
-          const multipler = new_pos.y - old_pos.y < 0 ? -1 : 1
-          for (let i = 1; i < 8; i++) {
-            const passedPosition: Position = new Position(old_pos.x, old_pos.y + i * multipler)
-            if (passedPosition.samePosition(new_pos)) {
-              if (this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)) {
-                return true
-              }
-            } else {
-              if (this.tileIsOccupied(passedPosition, boardState)) {
-                break
-              }
+      // horizontal move
+      if (old_pos.x === new_pos.x) {
+        const multipler = new_pos.y - old_pos.y < 0 ? -1 : 1
+        for (let i = 1; i < 8; i++) {
+          const passedPosition: Position = new Position(old_pos.x, old_pos.y + i * multipler)
+          if (passedPosition.samePosition(new_pos)) {
+            if (this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)) {
+              return true
+            }
+          } else {
+            if (this.tileIsOccupied(passedPosition, boardState)) {
+              break
             }
           }
         }
+      }
 
-        // vertical move
-        if (old_pos.y === new_pos.y) {
-          const multipler = new_pos.x - old_pos.x < 0 ? -1 : 1
-          for (let i = 1; i < 8; i++) {
-            const passedPosition: Position = new Position(old_pos.x + i * multipler, old_pos.y)
-            if (passedPosition.samePosition(new_pos)) {
-              if (this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)) {
-                return true
-              }
-            } else {
-              if (this.tileIsOccupied(passedPosition, boardState)) {
-                break
-              }
+      // vertical move
+      if (old_pos.y === new_pos.y) {
+        const multipler = new_pos.x - old_pos.x < 0 ? -1 : 1
+        for (let i = 1; i < 8; i++) {
+          const passedPosition: Position = new Position(old_pos.x + i * multipler, old_pos.y)
+          if (passedPosition.samePosition(new_pos)) {
+            if (this.tileIsEmptyOrOccupiedByOpponent(new_pos, team, boardState)) {
+              return true
+            }
+          } else {
+            if (this.tileIsOccupied(passedPosition, boardState)) {
+              break
             }
           }
         }
       }
       return false
     } else if (type === PieceType.QUEEN) {
-      if (team === TeamType.USERTEAM) {
-        const dx = new_pos.x - old_pos.x < 0 ? -1 : new_pos.x - old_pos.x > 0 ? 1 : 0
-        const dy = new_pos.y - old_pos.y < 0 ? -1 : new_pos.y - old_pos.y > 0 ? 1 : 0
-        for (let i = 1; i < 8; i++) {
-          const checkPosition = new Position(old_pos.x + i * dx, old_pos.y + i * dy)
-          if (
-            checkPosition.samePosition(new_pos) &&
-            this.tileIsEmptyOrOccupiedByOpponent(checkPosition, team, boardState)
-          ) {
-            return true
-          } else {
-            if (this.tileIsOccupied(checkPosition, boardState)) {
-              break
-            }
-          }
-        }
-      }
-    } else if (type === PieceType.KING) {
-      if (team == TeamType.USERTEAM) {
-        const dx = new_pos.x - old_pos.x < 0 ? -1 : new_pos.x - old_pos.x > 0 ? 1 : 0
-        const dy = new_pos.y - old_pos.y < 0 ? -1 : new_pos.y - old_pos.y > 0 ? 1 : 0
-
-        const checkPosition = new Position(old_pos.x + dx, old_pos.y + dy)
+      const dx = new_pos.x - old_pos.x < 0 ? -1 : new_pos.x - old_pos.x > 0 ? 1 : 0
+      const dy = new_pos.y - old_pos.y < 0 ? -1 : new_pos.y - old_pos.y > 0 ? 1 : 0
+      for (let i = 1; i < 8; i++) {
+        const checkPosition = new Position(old_pos.x + i * dx, old_pos.y + i * dy)
         if (
           checkPosition.samePosition(new_pos) &&
           this.tileIsEmptyOrOccupiedByOpponent(checkPosition, team, boardState)
         ) {
           return true
+        } else {
+          if (this.tileIsOccupied(checkPosition, boardState)) {
+            break
+          }
         }
       }
+    } else if (type === PieceType.KING) {
+      const dx = new_pos.x - old_pos.x < 0 ? -1 : new_pos.x - old_pos.x > 0 ? 1 : 0
+      const dy = new_pos.y - old_pos.y < 0 ? -1 : new_pos.y - old_pos.y > 0 ? 1 : 0
+
+      const checkPosition = new Position(old_pos.x + dx, old_pos.y + dy)
+      if (
+        checkPosition.samePosition(new_pos) &&
+        this.tileIsEmptyOrOccupiedByOpponent(checkPosition, team, boardState)
+      ) {
+        return true
+      } else {
+        return false
+      }
     }
-    return false
   }
 
   getPossiblePawnMoves = (pawn: Piece, boardState: Piece[]): Position[] => {
@@ -605,7 +594,41 @@ export default class Referee {
       }
     }
 
-    return possibleMoves
+    const safeMoves: Position[] = []
+
+    for (const move of possibleMoves) {
+      let safe: boolean = true
+      const piece: Piece = { ...king, position: move.copy() }
+      console.log(piece)
+      const cloneBoardState = [
+        ...boardState.filter(
+          (p) => !p.position.samePosition(move) && !(p.teamType === TeamType.USERTEAM && p.type === PieceType.KING)
+        ),
+        piece
+      ]
+      console.log(cloneBoardState)
+      for (const piece of cloneBoardState) {
+        if (piece.teamType === TeamType.USERTEAM || piece.position.samePosition(move) || piece.type === PieceType.KING)
+          continue
+        if (piece.type !== PieceType.PAWN) {
+          const computerMoves = this.getPossibleMoves(piece, cloneBoardState)
+          if (computerMoves.find((m) => m.samePosition(move))) {
+            safe = false
+            break
+          }
+        } else {
+          if (move.y === piece.position.y - 1 && Math.abs(move.x - piece.position.x) === 1) {
+            safe = false
+            break
+          }
+        }
+      }
+      if (safe) {
+        safeMoves.push(move)
+      }
+    }
+    console.log(safeMoves)
+    return safeMoves
   }
 
   getPossibleMoves(piece: Piece, boardState: Piece[]): Position[] {

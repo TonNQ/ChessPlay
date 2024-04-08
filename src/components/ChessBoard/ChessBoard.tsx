@@ -114,7 +114,8 @@ export default function ChessBoard({ pieces_board }: Props) {
                 piece.enPassant = false
               }
               // if the piece is current piece, set the new position and push to the result
-              piece.position = new_position.copy()
+              piece.position = new Position(new_position.x, new_position.y)
+              console.log(piece.position)
 
               const promotionRow = piece.teamType === TeamType.USERTEAM ? 7 : 0
               if (piece.position.y === promotionRow && piece.type === PieceType.PAWN) {
@@ -130,9 +131,10 @@ export default function ChessBoard({ pieces_board }: Props) {
               // if the piece is not attacked, push to the result
               results.push(piece)
             }
-
             return results
           }, [] as Piece[])
+          setPieces(updatedPieces)
+
           boardApi
             .updatePieces(getGameIdFromLocalStorage(), {
               x_from: activePosition.x,
@@ -141,7 +143,6 @@ export default function ChessBoard({ pieces_board }: Props) {
               y_to: new_position.y
             })
             .then((response) => {
-              console.log('hihihihi')
               const newUpdatedPieces = updatedPieces.reduce((result, piece) => {
                 const computer_from_position = new Position(response.data.x_from, response.data.y_from)
                 const computer_to_position = new Position(response.data.x_to, response.data.y_to)
@@ -154,6 +155,7 @@ export default function ChessBoard({ pieces_board }: Props) {
                 return result
               }, [] as Piece[])
               setPieces(newUpdatedPieces)
+              console.log(newUpdatedPieces)
             })
             .catch(() => {
               toast.error('Đã có lỗi xảy ra')

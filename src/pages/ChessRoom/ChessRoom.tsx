@@ -1,8 +1,12 @@
-import ChessBoard from 'src/components/ChessBoard/ChessBoard'
+import ChessBoard, { Piece } from 'src/components/ChessBoard/ChessBoard'
 import Clock from 'src/components/Clock/Clock'
 import User from 'src/components/User/User'
 
-export default function ChessRoom() {
+interface Props {
+  pieces: Piece[]
+}
+
+export default function ChessRoom({ pieces }: Props) {
   return (
     <div className='flex w-full flex-row'>
       <div className='flex-0 min-w-[300px]'>
@@ -31,7 +35,7 @@ export default function ChessRoom() {
               </div>
             ))}
           </div>
-          <ChessBoard />
+          <ChessBoard pieces_board={pieces} />
         </div>
       </div>
       <div className='flex-0 min-w-[300px] px-[25px]'>

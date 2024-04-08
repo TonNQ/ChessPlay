@@ -13,7 +13,6 @@ interface Props {
 }
 
 export default function Tile({ image, number_row, number_column, onClick, isActive, isHighlight }: Props) {
-  console.log(isActive)
   if (number_row % 2 === number_column % 2) {
     return (
       <div

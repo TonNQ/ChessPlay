@@ -13,7 +13,7 @@ export default function Home({ setIsGameExist }: Props) {
       </div>
       <img alt='ảnh' src={ChessStock} className='absolute h-full w-full object-cover opacity-90' />
       <button
-        className='pixel-font absolute bottom-[120px] left-1/2 z-50 -translate-x-1/2 transform bg-lightBrown border-none hover:bg-darkLayout text-2xl uppercase'
+        className='pixel-font absolute bottom-[120px] left-1/2 z-50 -translate-x-1/2 transform border-none bg-lightBrown text-2xl uppercase hover:bg-darkLayout'
         onClick={() => setIsGameExist(true)}
       >
         Play new game

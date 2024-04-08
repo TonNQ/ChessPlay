@@ -4,17 +4,23 @@ import ChessBoard from './components/ChessBoard/ChessBoard'
 import User from './components/User/User'
 import boardApi from './apis/board.api'
 import { toast } from 'react-toastify'
+import { getGameIdFromLocalStorage, setGameIdToLocalStorage } from './utils/storage'
 
 function App() {
   useEffect(() => {
-    boardApi
-      .createGame()
-      .then((response) => {
-        console.log(response.data.id)
-      })
-      .catch((error) => {
-        toast.error(error.message)
-      })
+    const gameId = getGameIdFromLocalStorage()
+    if (gameId === '') {
+      boardApi
+        .createGame()
+        .then((response) => {
+          setGameIdToLocalStorage(response.data.id)
+        })
+        .catch((error) => {
+          toast.error(error.message)
+        })
+    } else {
+      console.log(gameId)
+    }
   })
   return (
     <div id='app'>

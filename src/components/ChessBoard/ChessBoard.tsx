@@ -229,7 +229,7 @@ export default function ChessBoard() {
       if (piece.position.samePosition(promotionPawn.position)) {
         piece.type = pieceType
         const color = piece.teamType === TeamType.USERTEAM ? 'w' : 'b'
-        piece.image = `assets/images/${PieceType[pieceType].toLowerCase()}_${color}.png`
+        piece.image = `assets/images/${PieceType[pieceType].toLowerCase()}-${color}.svg`
       }
 
       results.push(piece)

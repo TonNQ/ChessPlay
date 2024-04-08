@@ -37,49 +37,49 @@ for (let p = 0; p < 2; p++) {
   const y = teamType === TeamType.COMPUTERTEAM ? 7 : 0
 
   initialPieces.push({
-    image: `assets/images/rook_${type}.png`,
+    image: `assets/images/rook-${type}.svg`,
     position: new Position(0, y),
     type: PieceType.ROOK,
     teamType
   })
   initialPieces.push({
-    image: `assets/images/rook_${type}.png`,
+    image: `assets/images/rook-${type}.svg`,
     position: new Position(7, y),
     type: PieceType.ROOK,
     teamType
   })
   initialPieces.push({
-    image: `assets/images/knight_${type}.png`,
+    image: `assets/images/knight-${type}.svg`,
     position: new Position(1, y),
     type: PieceType.KNIGHT,
     teamType
   })
   initialPieces.push({
-    image: `assets/images/knight_${type}.png`,
+    image: `assets/images/knight-${type}.svg`,
     position: new Position(6, y),
     type: PieceType.KNIGHT,
     teamType
   })
   initialPieces.push({
-    image: `assets/images/bishop_${type}.png`,
+    image: `assets/images/bishop-${type}.svg`,
     position: new Position(2, y),
     type: PieceType.BISHOP,
     teamType
   })
   initialPieces.push({
-    image: `assets/images/bishop_${type}.png`,
+    image: `assets/images/bishop-${type}.svg`,
     position: new Position(5, y),
     type: PieceType.BISHOP,
     teamType
   })
   initialPieces.push({
-    image: `assets/images/queen_${type}.png`,
+    image: `assets/images/queen-${type}.svg`,
     position: new Position(3, y),
     type: PieceType.QUEEN,
     teamType
   })
   initialPieces.push({
-    image: `assets/images/king_${type}.png`,
+    image: `assets/images/king-${type}.svg`,
     position: new Position(4, y),
     type: PieceType.KING,
     teamType
@@ -88,7 +88,7 @@ for (let p = 0; p < 2; p++) {
 
 for (let i = 0; i < 8; i++) {
   initialPieces.push({
-    image: 'assets/images/pawn_b.png',
+    image: 'assets/images/pawn-b.svg',
     position: new Position(i, 6),
     type: PieceType.PAWN,
     teamType: TeamType.COMPUTERTEAM
@@ -97,7 +97,7 @@ for (let i = 0; i < 8; i++) {
 
 for (let i = 0; i < 8; i++) {
   initialPieces.push({
-    image: 'assets/images/pawn_w.png',
+    image: 'assets/images/pawn-w.svg',
     position: new Position(i, 1),
     type: PieceType.PAWN,
     teamType: TeamType.USERTEAM

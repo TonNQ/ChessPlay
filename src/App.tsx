@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import './App.css'
 import ChessBoard from './components/ChessBoard/ChessBoard'
+import Clock from './components/Clock/Clock'
 import User from './components/User/User'
 import boardApi from './apis/board.api'
 import { toast } from 'react-toastify'
@@ -103,9 +104,7 @@ function App() {
                 <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
               </div>
             </div>
-            <div className='pixel-font flex w-full flex-row items-center justify-center py-2 text-7xl text-white/50'>
-              <span className='mr-2'>0</span> : <span className='ml-2'>00</span>
-            </div>
+            <Clock />
           </div>
         </div>
       </div>

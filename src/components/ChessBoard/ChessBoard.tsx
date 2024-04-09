@@ -50,13 +50,16 @@ export default function ChessBoard({ pieces_board }: Props) {
       const currentPiece = pieces.find((piece) => piece.position.samePosition(activePosition))
       // const destinationPiece = pieces.find((piece) => piece.position.samePosition(new Position(i, j)))
       if (currentPiece) {
-        const validMove = referee.isValidMove(
-          activePosition,
-          new_position,
-          currentPiece?.type,
-          currentPiece?.teamType,
-          pieces
-        )
+        // const validMove = referee.isValidMove(
+        //   activePosition,
+        //   new_position,
+        //   currentPiece?.type,
+        //   currentPiece?.teamType,
+        //   pieces
+        // )
+
+        const validMove = possiblePosition.some((piece) => piece.samePosition(new_position))
+
         const isEnPassantMove = referee.isEnPassantMove(activePosition, new_position, currentPiece.type, pieces)
         if (isEnPassantMove) {
           // if the move is en passant, remove the piece that is in the bottom of moved piece
@@ -168,7 +171,7 @@ export default function ChessBoard({ pieces_board }: Props) {
       const currentPiece = pieces.find((piece) => piece.position.samePosition(new Position(i, j)))
       if (currentPiece?.teamType === TeamType.USERTEAM) {
         setActivePosition(new Position(i, j))
-        setPossiblePosition(referee.getPossibleMoves(currentPiece, pieces))
+        setPossiblePosition(referee.getPossibleMovesWithoutKingDanger(currentPiece, pieces))
       }
     }
   }

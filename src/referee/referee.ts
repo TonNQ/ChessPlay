@@ -608,8 +608,7 @@ export default class Referee {
       ]
       console.log(cloneBoardState)
       for (const piece of cloneBoardState) {
-        if (piece.teamType === TeamType.USERTEAM || piece.position.samePosition(move) || piece.type === PieceType.KING)
-          continue
+        if (piece.teamType === TeamType.USERTEAM || piece.position.samePosition(move)) continue
         if (piece.type !== PieceType.PAWN) {
           const computerMoves = this.getPossibleMoves(piece, cloneBoardState)
           if (computerMoves.find((m) => m.samePosition(move))) {
@@ -631,6 +630,7 @@ export default class Referee {
     return safeMoves
   }
 
+  // Những nước đi có thể đi của mỗi quân cờ (chưa tính trường hợp king danger)
   getPossibleMoves(piece: Piece, boardState: Piece[]): Position[] {
     if (piece.type === PieceType.BISHOP) {
       return this.getPossibleBishopMoves(piece, boardState)
@@ -647,5 +647,58 @@ export default class Referee {
     } else {
       return []
     }
+  }
+
+  getPossibleMovesWithoutKingDanger(chosenPiece: Piece, boardState: Piece[]): Position[] {
+    const moves = this.getPossibleMoves(chosenPiece, boardState)
+
+    // Nếu là vua thì trả về hàm getPossibleMoves vì đã xử lý king danger ở hàm getPossibleKingMoves
+    if (chosenPiece.type === PieceType.KING) {
+      return moves
+    }
+
+    const safeMoves: Position[] = []
+
+    const kingPiece = boardState.find((piece) => piece.teamType === TeamType.USERTEAM && piece.type === PieceType.KING)
+
+    for (const move of moves) {
+      let safe: boolean = true
+      const simulatedPiece: Piece = { ...chosenPiece, position: move.copy() }
+      console.log(chosenPiece)
+      if (kingPiece === undefined) return []
+      else {
+        const cloneBoardState = [
+          ...boardState.filter(
+            (p) => !p.position.samePosition(move) && !(p.teamType === TeamType.USERTEAM && p.type === PieceType.KING)
+          ),
+          simulatedPiece
+        ]
+
+        console.log(cloneBoardState)
+        for (const piece of cloneBoardState) {
+          if (piece.teamType === TeamType.USERTEAM || piece.position.samePosition(move)) continue
+          // Còn lại là quân địch
+          if (piece.type !== PieceType.PAWN) {
+            const computerMoves = this.getPossibleMoves(piece, cloneBoardState)
+            if (computerMoves.find((m) => m.samePosition(kingPiece.position))) {
+              safe = false
+              break
+            }
+          } else {
+            if (
+              kingPiece.position.y === piece.position.y - 1 &&
+              Math.abs(kingPiece.position.x - piece.position.x) === 1
+            ) {
+              safe = false
+              break
+            }
+          }
+        }
+        if (safe) {
+          safeMoves.push(move)
+        }
+      }
+    }
+    return safeMoves
   }
 }

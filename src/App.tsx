@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import ChessRoom from 'src/pages/ChessRoom/ChessRoom'
 import Home from './pages/Home/Home'
-import { getGameIdFromLocalStorage, setGameIdToLocalStorage } from './utils/storage'
+import { getGameIdFromLocalStorage } from './utils/storage'
 import boardApi from './apis/board.api'
-import { toast } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
 import { exportPieces } from './utils/utils'
 import { Piece, PieceType, TeamType } from './components/ChessBoard/ChessBoard'
 import { Position } from './models/Position'
@@ -91,18 +91,7 @@ function App() {
 
   useEffect(() => {
     const gameId = getGameIdFromLocalStorage()
-    if (gameId === '') {
-      if (isGameExist) {
-        boardApi
-          .createGame()
-          .then((response) => {
-            setGameIdToLocalStorage(response.data.id)
-          })
-          .catch((error) => {
-            toast.error(error.message)
-          })
-      }
-    } else {
+    if (gameId !== '') {
       boardApi
         .findGame(gameId)
         .then((response) => {
@@ -112,7 +101,12 @@ function App() {
         .catch((error) => toast.error(error.message))
     }
   }, [isGameExist])
-  return <div id='app'>{isGameExist ? <ChessRoom pieces={pieces} /> : <Home setIsGameExist={setIsGameExist} />}</div>
+  return (
+    <>
+      <div id='app'>{isGameExist ? <ChessRoom pieces={pieces} /> : <Home setIsGameExist={setIsGameExist} />}</div>
+      <ToastContainer />
+    </>
+  )
 }
 
 export default App

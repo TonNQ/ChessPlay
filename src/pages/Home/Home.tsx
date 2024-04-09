@@ -5,16 +5,16 @@ import { setGameIdToLocalStorage } from 'src/utils/storage'
 import { toast } from 'react-toastify'
 
 interface Props {
-  setIsGameExist: React.Dispatch<React.SetStateAction<boolean>>
+  setGameId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
-export default function Home({ setIsGameExist }: Props) {
+export default function Home({ setGameId }: Props) {
   const handleClick = () => {
     boardApi
       .createGame()
       .then((response) => {
         setGameIdToLocalStorage(response.data.id)
-        setIsGameExist(true)
+        setGameId(response.data.id)
       })
       .catch((error) => {
         toast.error(error.message)

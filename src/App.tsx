@@ -5,6 +5,7 @@ import Home from './pages/Home/Home'
 import { getGameIdFromLocalStorage } from './utils/storage'
 import boardApi from './apis/board.api'
 import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { exportPieces } from './utils/utils'
 import { Piece, PieceType, TeamType } from './components/ChessBoard/ChessBoard'
 import { Position } from './models/Position'
@@ -85,27 +86,28 @@ for (let i = 0; i < 8; i++) {
 }
 
 function App() {
-  const [isGameExist, setIsGameExist] = useState<boolean>(false)
+  const [gameId, setGameId] = useState<string | null>(null)
 
   const [pieces, setPieces] = useState<Piece[]>(initialPieces)
 
   useEffect(() => {
-    const gameId = getGameIdFromLocalStorage()
-    if (gameId !== '') {
+    const id = getGameIdFromLocalStorage()
+    if (id) {
       boardApi
-        .findGame(gameId)
+        .findGame(id)
         .then((response) => {
           setPieces(exportPieces(response.data.chess_pieces))
-          setIsGameExist(true)
+          setGameId(id)
         })
         .catch((error) => toast.error(error.message))
     }
-  }, [isGameExist])
+  }, [gameId])
+
   return (
-    <>
-      <div id='app'>{isGameExist ? <ChessRoom pieces={pieces} /> : <Home setIsGameExist={setIsGameExist} />}</div>
+    <div id='app'>
+      {gameId ? <ChessRoom pieces={pieces} /> : <Home setGameId={setGameId} />}
       <ToastContainer />
-    </>
+    </div>
   )
 }
 

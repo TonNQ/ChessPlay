@@ -1,11 +1,29 @@
 import http from 'src/utils/http'
 
+// Kiểm tra các quân cờ vua, xe đã di chuyển chưa (nhập thành)
+interface CheckMoved {
+  king: boolean
+  knigside_rook: boolean
+  queenside_rook: boolean
+}
+
+interface BoardState {
+  _id: string
+  chess_pieces: Array<Array<string>>
+  white_moved: CheckMoved
+  black_moved: CheckMoved
+  captured_moved: {
+    white: Array<string>
+    black: Array<string>
+  }
+}
+
 const boardApi = {
   createGame() {
     return http.post<{ id: string }>('/create/')
   },
   findGame(id: string) {
-    return http.get(`/find/${id}/`)
+    return http.get<BoardState>(`/find/${id}/`)
   },
   updatePieces(id: string, params: { x_from: number; y_from: number; x_to: number; y_to: number }) {
     return http.put<{

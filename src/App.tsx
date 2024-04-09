@@ -21,13 +21,15 @@ for (let p = 0; p < 2; p++) {
     image: `assets/images/rook-${type}.svg`,
     position: new Position(0, y),
     type: PieceType.ROOK,
-    teamType
+    teamType,
+    hasMoved: false
   })
   initialPieces.push({
     image: `assets/images/rook-${type}.svg`,
     position: new Position(7, y),
     type: PieceType.ROOK,
-    teamType
+    teamType,
+    hasMoved: false
   })
   initialPieces.push({
     image: `assets/images/knight-${type}.svg`,
@@ -63,7 +65,8 @@ for (let p = 0; p < 2; p++) {
     image: `assets/images/king-${type}.svg`,
     position: new Position(4, y),
     type: PieceType.KING,
-    teamType
+    teamType,
+    hasMoved: false
   })
 }
 
@@ -96,7 +99,7 @@ function App() {
       boardApi
         .findGame(id)
         .then((response) => {
-          setPieces(exportPieces(response.data.chess_pieces))
+          setPieces(exportPieces(response.data.chess_pieces, response.data.white_moved))
           setGameId(id)
         })
         .catch((error) => toast.error(error.message))

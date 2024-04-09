@@ -15,7 +15,10 @@ export interface Piece {
   position: Position
   type: PieceType
   teamType: TeamType
+  // chỉ cần thiết cho quân tốt để bắt tốt qua đường, các loại quân khác không có thuộc tính này
   enPassant?: boolean
+  // chỉ cần thiết cho quân vua/xe trắng (team mình) khi nhập thành, các loại quân khác không có thuộc tính này
+  hasMoved?: boolean
 }
 
 export enum PieceType {
@@ -39,6 +42,7 @@ interface Props {
 export default function ChessBoard({ pieces_board }: Props) {
   const [activePosition, setActivePosition] = useState<Position | null>(null)
   const [possiblePosition, setPossiblePosition] = useState<Position[]>([])
+  const [castlingPosition, setCastlingPosition] = useState<Position[]>([])
   const [pieces, setPieces] = useState<Piece[]>(pieces_board)
   const [promotionPawn, setPromotionPawn] = useState<Piece | null>(null)
   const promotionRef = useRef<HTMLDivElement>(null)
@@ -60,6 +64,13 @@ export default function ChessBoard({ pieces_board }: Props) {
 
         const validMove = possiblePosition.some((piece) => piece.samePosition(new_position))
 
+        // Left: -1, right: 1, no castling: 0
+        const isCastling = castlingPosition.some((piece) => piece.samePosition(new_position))
+          ? new_position.x - currentPiece.position.x < 0
+            ? -1
+            : 1
+          : 0
+
         const isEnPassantMove = referee.isEnPassantMove(activePosition, new_position, currentPiece.type, pieces)
         if (isEnPassantMove) {
           // if the move is en passant, remove the piece that is in the bottom of moved piece
@@ -77,6 +88,49 @@ export default function ChessBoard({ pieces_board }: Props) {
               results.push(piece)
             }
 
+            return results
+          }, [] as Piece[])
+          boardApi
+            .updatePieces(getGameIdFromLocalStorage(), {
+              x_from: activePosition.x,
+              y_from: activePosition.y,
+              x_to: new_position.x,
+              y_to: new_position.y
+            })
+            .then((response) => {
+              if (response.data.result === null) {
+                const newUpdatedPieces = updatedPieces.reduce((result, piece) => {
+                  const computer_from_position = new Position(response.data.x_from, response.data.y_from)
+                  const computer_to_position = new Position(response.data.x_to, response.data.y_to)
+                  if (piece.position.samePosition(computer_from_position)) {
+                    piece.position = computer_from_position.copy()
+                    result.push(piece)
+                  } else if (!piece.position.samePosition(computer_to_position)) {
+                    result.push(piece)
+                  }
+                  return result
+                }, [] as Piece[])
+                setPieces(newUpdatedPieces)
+              }
+            })
+            .catch(() => {
+              toast.error('Đã có lỗi xảy ra')
+            })
+        } else if (isCastling !== 0) {
+          const updatedPieces = pieces.reduce((results, piece) => {
+            // Quân vua di chuyển 2 ô
+            if (piece.position.samePosition(activePosition)) {
+              piece.position = new Position(piece.position.x + 2 * isCastling, piece.position.y)
+              results.push(piece)
+            } else if (piece.position.samePosition(new_position)) {
+              piece.position = new Position(
+                isCastling === -1 ? piece.position.x + 3 : piece.position.x - 2,
+                piece.position.y
+              )
+              results.push(piece)
+            } else {
+              results.push(piece)
+            }
             return results
           }, [] as Piece[])
           boardApi
@@ -167,14 +221,22 @@ export default function ChessBoard({ pieces_board }: Props) {
       }
       setActivePosition(null)
       setPossiblePosition([])
+      setCastlingPosition([])
     } else {
       const currentPiece = pieces.find((piece) => piece.position.samePosition(new Position(i, j)))
       if (currentPiece?.teamType === TeamType.USERTEAM) {
         setActivePosition(new Position(i, j))
         setPossiblePosition(referee.getPossibleMovesWithoutKingDanger(currentPiece, pieces))
+        if (currentPiece.type === PieceType.KING) {
+          console.log('hello')
+          console.log(referee.getCastlingMoves(currentPiece, pieces))
+          setCastlingPosition(referee.getCastlingMoves(currentPiece, pieces))
+        }
       }
     }
   }
+
+  console.log('castlingPosition', castlingPosition)
 
   const board = []
 
@@ -190,6 +252,7 @@ export default function ChessBoard({ pieces_board }: Props) {
       const p = new Position(i, j)
       const isActive = (activePosition && activePosition.samePosition(p)) as boolean
       const isHighlight = possiblePosition.some((position) => position.samePosition(p))
+      const isCastling = castlingPosition.some((position) => position.samePosition(p))
       board.push(
         <Tile
           key={`${j},${i}`}
@@ -199,6 +262,7 @@ export default function ChessBoard({ pieces_board }: Props) {
           onClick={() => handleClick(i, j)}
           isActive={isActive}
           isHighlight={isHighlight}
+          isCastling={isCastling}
         />
       )
     }

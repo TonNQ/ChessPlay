@@ -1,13 +1,13 @@
 import http from 'src/utils/http'
 
 // Kiểm tra các quân cờ vua, xe đã di chuyển chưa (nhập thành)
-interface CheckMoved {
+export interface CheckMoved {
   king: boolean
-  knigside_rook: boolean
+  kingside_rook: boolean
   queenside_rook: boolean
 }
 
-interface BoardState {
+export interface BoardState {
   _id: string
   chess_pieces: Array<Array<string>>
   white_moved: CheckMoved

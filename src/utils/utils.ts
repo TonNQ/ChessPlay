@@ -1,3 +1,4 @@
+import { CheckMoved } from 'src/apis/board.api'
 import { Piece, PieceType, TeamType } from 'src/components/ChessBoard/ChessBoard'
 import { Position } from 'src/models/Position'
 
@@ -37,19 +38,33 @@ const getPieceType = (sign: string) => {
   }
 }
 
-export const exportPieces = (chess_pieces: Array<Array<string | number>>) => {
+export const exportPieces = (chess_pieces: Array<Array<string | number>>, white_moved: CheckMoved) => {
   const pieces: Piece[] = []
-  for (let col = 0; col < chess_pieces.length; col++) {
-    for (let row = 0; row < chess_pieces[col].length; row++) {
-      if (typeof chess_pieces[row][col] === 'string') {
+  for (let y = 0; y < chess_pieces.length; y++) {
+    for (let x = 0; x < chess_pieces[y].length; x++) {
+      if (typeof chess_pieces[x][y] === 'string') {
         const piece: Piece = {
-          image: `assets/images/${getPieceName((chess_pieces[row][col] as string).charAt((chess_pieces[row][col] as string).length - 1))}-${(chess_pieces[row][col] as string).startsWith('W') ? 'w' : 'b'}.svg`,
-          position: new Position(row, col),
+          image: `assets/images/${getPieceName((chess_pieces[x][y] as string).charAt((chess_pieces[x][y] as string).length - 1))}-${(chess_pieces[x][y] as string).startsWith('W') ? 'w' : 'b'}.svg`,
+          position: new Position(x, y),
           type: getPieceType(
-            (chess_pieces[row][col] as string).charAt((chess_pieces[row][col] as string).length - 1)
+            (chess_pieces[x][y] as string).charAt((chess_pieces[x][y] as string).length - 1)
           ) as PieceType,
-          teamType: (chess_pieces[row][col] as string).startsWith('W') ? TeamType.USERTEAM : TeamType.COMPUTERTEAM,
-          enPassant: false
+          teamType: (chess_pieces[x][y] as string).startsWith('W') ? TeamType.USERTEAM : TeamType.COMPUTERTEAM,
+          enPassant: false,
+          hasMoved:
+            ((getPieceType(
+              (chess_pieces[x][y] as string).charAt((chess_pieces[x][y] as string).length - 1)
+            ) as PieceType) === PieceType.KING &&
+              (chess_pieces[x][y] as string).startsWith('W') &&
+              !white_moved.king) ||
+            ((getPieceType(
+              (chess_pieces[x][y] as string).charAt((chess_pieces[x][y] as string).length - 1)
+            ) as PieceType) === PieceType.ROOK &&
+              (chess_pieces[x][y] as string).startsWith('W') &&
+              ((x === 0 && y === 0 && !white_moved.queenside_rook) ||
+                (x === 7 && y === 0 && !white_moved.kingside_rook)))
+              ? false
+              : true
         }
         pieces.push(piece)
       }

@@ -10,13 +10,14 @@ interface Props {
   onClick: () => void
   isActive: boolean
   isHighlight: boolean
+  isCastling: boolean
 }
 
-export default function Tile({ image, number_row, number_column, onClick, isActive, isHighlight }: Props) {
+export default function Tile({ image, number_row, number_column, onClick, isActive, isHighlight, isCastling }: Props) {
   if (number_row % 2 === number_column % 2) {
     return (
       <div
-        className={`tile relative hover:cursor-default ${isActive ? 'bg-lightLayout' : 'black-tile'}`}
+        className={`tile relative hover:cursor-default ${isActive ? 'bg-lightLayout' : isCastling ? 'bg-slate-500' : 'black-tile'}`}
         onClick={onClick}
       >
         {image && (
@@ -33,7 +34,7 @@ export default function Tile({ image, number_row, number_column, onClick, isActi
   } else {
     return (
       <div
-        className={`tile relative hover:cursor-default ${isActive ? 'bg-lightLayout' : 'white-tile'}`}
+        className={`tile relative hover:cursor-default ${isActive ? 'bg-lightLayout' : isCastling ? 'bg-slate-500' : 'white-tile'}`}
         onClick={onClick}
       >
         {image && (

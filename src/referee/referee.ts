@@ -630,6 +630,38 @@ export default class Referee {
     return safeMoves
   }
 
+  getCastlingMoves(king: Piece, boardState: Piece[]): Position[] {
+    if (king.hasMoved) return []
+    // Kiểm tra quân vua có đang bị chiếu tướng không
+    const enemyPieces = boardState.filter((p) => p.teamType === TeamType.COMPUTERTEAM)
+    for (const enemy of enemyPieces) {
+      const moves = this.getPossibleMoves(enemy, boardState)
+      if (moves.find((m) => m.samePosition(king.position))) {
+        return []
+      }
+    }
+
+    const possibleMoves: Position[] = []
+    const rooks = boardState.filter((p) => p.type === PieceType.ROOK && p.teamType === TeamType.USERTEAM && !p.hasMoved)
+    for (const rook of rooks) {
+      // Queenside rook
+      if (rook.position.samePosition(new Position(0, 0))) {
+        const moves = this.getPossibleMoves(rook, boardState)
+        if (moves.filter((move) => move.y === king.position.y).length === 3) {
+          possibleMoves.push(rook.position)
+        }
+      }
+      // Kingside rook
+      else if (rook.position.samePosition(new Position(7, 0))) {
+        const moves = this.getPossibleMoves(rook, boardState)
+        if (moves.filter((move) => move.y === king.position.y).length === 2) {
+          possibleMoves.push(rook.position)
+        }
+      }
+    }
+    return possibleMoves
+  }
+
   // Những nước đi có thể đi của mỗi quân cờ (chưa tính trường hợp king danger)
   getPossibleMoves(piece: Piece, boardState: Piece[]): Position[] {
     if (piece.type === PieceType.BISHOP) {

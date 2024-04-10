@@ -697,7 +697,7 @@ export default class Referee {
     const safeMoves: Position[] = []
 
     const kingPiece = boardState.find((piece) => piece.teamType === TeamType.USERTEAM && piece.type === PieceType.KING)
-
+    console.log('kingPiece', kingPiece)
     for (const move of moves) {
       let safe: boolean = true
       const simulatedPiece: Piece = { ...chosenPiece, position: move.copy() }
@@ -705,16 +705,21 @@ export default class Referee {
       else {
         const cloneBoardState = [
           ...boardState.filter(
-            (p) => !p.position.samePosition(move) && !(p.teamType === TeamType.USERTEAM && p.type === PieceType.KING)
+            (p) =>
+              !p.position.samePosition(chosenPiece.position) &&
+              !(p.teamType === TeamType.USERTEAM && p.type === PieceType.KING)
           ),
           simulatedPiece
         ]
-
+        console.log(cloneBoardState)
         for (const piece of cloneBoardState) {
           if (piece.teamType === TeamType.USERTEAM || piece.position.samePosition(move)) continue
           // Còn lại là quân địch
           if (piece.type !== PieceType.PAWN && piece.type !== PieceType.KING) {
             const computerMoves = this.getPossibleMoves(piece, cloneBoardState)
+            if (piece.type === PieceType.QUEEN) {
+              console.log('computermoves', computerMoves)
+            }
             if (computerMoves.find((m) => m.samePosition(kingPiece.position))) {
               safe = false
               break
@@ -730,6 +735,7 @@ export default class Referee {
           }
         }
         if (safe) {
+          console.log(move)
           safeMoves.push(move)
         }
       }

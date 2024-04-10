@@ -2,7 +2,7 @@ import { CheckMoved } from 'src/apis/board.api'
 import { Piece, PieceType, TeamType } from 'src/components/ChessBoard/ChessBoard'
 import { Position } from 'src/models/Position'
 
-function getPieceName(pieceChar: string): string {
+export function getPieceName(pieceChar: string): string {
   switch (pieceChar) {
     case 'P':
       return 'pawn'
@@ -21,7 +21,15 @@ function getPieceName(pieceChar: string): string {
   }
 }
 
-const getPieceType = (sign: string) => {
+export const getPieceImageUrl = (signName: string) => {
+  if (signName[0] === 'W') {
+    return getPieceName(signName[-1]) + '_w.png'
+  } else {
+    return getPieceName(signName[-1]) + '_b.png'
+  }
+}
+
+export const getPieceType = (sign: string) => {
   switch (sign) {
     case 'P':
       return PieceType.PAWN

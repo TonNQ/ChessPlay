@@ -12,7 +12,20 @@ export interface BoardState {
   chess_pieces: Array<Array<string>>
   white_moved: CheckMoved
   black_moved: CheckMoved
-  captured_moved: {
+  captured_pieces: {
+    white: Array<string>
+    black: Array<string>
+  }
+}
+
+export interface NextStepPiece {
+  is_finished: boolean
+  result: string | null
+  x_from: number
+  y_from: number
+  x_to: number
+  y_to: number
+  captured_pieces: {
     white: Array<string>
     black: Array<string>
   }
@@ -26,14 +39,7 @@ const boardApi = {
     return http.get<BoardState>(`/find/${id}/`)
   },
   updatePieces(id: string, params: { x_from: number; y_from: number; x_to: number; y_to: number }) {
-    return http.put<{
-      is_finished: boolean
-      result: string | null
-      x_from: number
-      y_from: number
-      x_to: number
-      y_to: number
-    }>(`/update/${id}/`, params)
+    return http.put<NextStepPiece>(`/update/${id}/`, params)
   }
 }
 

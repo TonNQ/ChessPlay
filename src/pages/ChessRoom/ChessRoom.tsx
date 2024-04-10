@@ -1,12 +1,19 @@
+import { useState } from 'react'
 import ChessBoard, { Piece } from 'src/components/ChessBoard/ChessBoard'
 import Clock from 'src/components/Clock/Clock'
 import User from 'src/components/User/User'
+import { getPieceName } from 'src/utils/utils'
 
 interface Props {
   pieces: Piece[]
+  initWhitePieceCaptured: string[]
+  initBlackPieceCaptured: string[]
 }
 
-export default function ChessRoom({ pieces }: Props) {
+export default function ChessRoom({ pieces, initWhitePieceCaptured, initBlackPieceCaptured }: Props) {
+  const [blackPieceCaptured, setBlackPieceCaptured] = useState<string[]>(initBlackPieceCaptured || [])
+  const [whitePieceCaptured, setWhitePieceCaptured] = useState<string[]>(initWhitePieceCaptured || [])
+
   return (
     <div className='flex w-full flex-row'>
       <div className='flex-0 min-w-[300px]'>
@@ -35,7 +42,11 @@ export default function ChessRoom({ pieces }: Props) {
               </div>
             ))}
           </div>
-          <ChessBoard pieces_board={pieces} />
+          <ChessBoard
+            pieces_board={pieces}
+            setWhitePieceCaptured={setWhitePieceCaptured}
+            setBlackPieceCaptured={setBlackPieceCaptured}
+          />
         </div>
       </div>
       <div className='flex-0 min-w-[300px] px-[25px]'>
@@ -55,36 +66,24 @@ export default function ChessRoom({ pieces }: Props) {
           </div>
           <div className='my-2 flex w-full flex-1 flex-row items-end'>
             <div className='flex max-h-[400px] w-[50%] flex-col-reverse flex-wrap items-center'>
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_w.png' className='h-[50px] w-[50px]' />
+              {whitePieceCaptured.map((piece) => (
+                <img
+                  key={piece}
+                  alt='piece'
+                  src={`assets/images/${getPieceName(piece[piece.length - 1])}-w.svg`}
+                  className='h-[50px] w-[50px]'
+                />
+              ))}
             </div>
             <div className='flex max-h-[400px] w-[50%] flex-col-reverse flex-wrap items-center'>
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
-              <img alt='piece' src='assets/images/pawn_b.png' className='h-[50px] w-[50px]' />
+              {blackPieceCaptured.map((piece) => (
+                <img
+                  key={piece}
+                  alt='piece'
+                  src={`assets/images/${getPieceName(piece[piece.length - 1])}-b.svg`}
+                  className='h-[50px] w-[50px]'
+                />
+              ))}
             </div>
           </div>
           <Clock />

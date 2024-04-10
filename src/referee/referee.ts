@@ -699,10 +699,8 @@ export default class Referee {
     const kingPiece = boardState.find((piece) => piece.teamType === TeamType.USERTEAM && piece.type === PieceType.KING)
 
     for (const move of moves) {
-      console.log('hihihihihi')
       let safe: boolean = true
       const simulatedPiece: Piece = { ...chosenPiece, position: move.copy() }
-      console.log(chosenPiece)
       if (kingPiece === undefined) return []
       else {
         const cloneBoardState = [
@@ -712,7 +710,6 @@ export default class Referee {
           simulatedPiece
         ]
 
-        console.log(cloneBoardState)
         for (const piece of cloneBoardState) {
           if (piece.teamType === TeamType.USERTEAM || piece.position.samePosition(move)) continue
           // Còn lại là quân địch
@@ -741,21 +738,19 @@ export default class Referee {
   }
 
   isCheckmate(king: Piece, boardState: Piece[]): boolean {
-    console.log('checkmate-king', king)
     const enemyPieces = boardState.filter((p) => p.teamType !== king.teamType)
     for (const enemy of enemyPieces) {
       if (enemy.type === PieceType.PAWN) {
         if (
           Math.abs(king.position.x - enemy.position.x) === 1 &&
-          ((enemy.teamType === TeamType.COMPUTERTEAM && king.position.y === enemy.position.y + 1) ||
-            (enemy.teamType === TeamType.USERTEAM && king.position.y === enemy.position.y - 1))
+          ((enemy.teamType === TeamType.COMPUTERTEAM && king.position.y === enemy.position.y - 1) ||
+            (enemy.teamType === TeamType.USERTEAM && king.position.y === enemy.position.y + 1))
         ) {
           return true
         }
       } else {
         const moves = this.getPossibleMoves(enemy, boardState)
         if (moves.find((m) => m.samePosition(king.position))) {
-          console.log('checkmate neeeeeeeeeeeeee')
           return true
         }
       }

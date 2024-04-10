@@ -90,8 +90,9 @@ for (let i = 0; i < 8; i++) {
 
 function App() {
   const [gameId, setGameId] = useState<string | null>(null)
-
   const [pieces, setPieces] = useState<Piece[]>(initialPieces)
+  const [initWhitePieceCaptured, setInitWhitePieceCaptured] = useState<string[]>([])
+  const [initBlackPieceCaptured, setInitBlackPieceCaptured] = useState<string[]>([])
 
   useEffect(() => {
     const id = getGameIdFromLocalStorage()
@@ -99,6 +100,8 @@ function App() {
       boardApi
         .findGame(id)
         .then((response) => {
+          setInitWhitePieceCaptured(response.data.captured_pieces.white)
+          setInitBlackPieceCaptured(response.data.captured_pieces.black)
           setPieces(exportPieces(response.data.chess_pieces, response.data.white_moved))
           setGameId(id)
         })
@@ -108,7 +111,15 @@ function App() {
 
   return (
     <div id='app'>
-      {gameId ? <ChessRoom pieces={pieces} /> : <Home setGameId={setGameId} />}
+      {gameId ? (
+        <ChessRoom
+          pieces={pieces}
+          initWhitePieceCaptured={initWhitePieceCaptured}
+          initBlackPieceCaptured={initBlackPieceCaptured}
+        />
+      ) : (
+        <Home setGameId={setGameId} />
+      )}
       <ToastContainer />
     </div>
   )

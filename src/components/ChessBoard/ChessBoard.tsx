@@ -38,15 +38,18 @@ export enum TeamType {
 
 interface Props {
   pieces_board: Piece[]
+  setWhitePieceCaptured: React.Dispatch<React.SetStateAction<string[]>>
+  setBlackPieceCaptured: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-export default function ChessBoard({ pieces_board }: Props) {
+export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBlackPieceCaptured }: Props) {
   const [activePosition, setActivePosition] = useState<Position | null>(null)
   const [possiblePosition, setPossiblePosition] = useState<Position[]>([])
   const [castlingPosition, setCastlingPosition] = useState<Position[]>([])
   const [checkmatePosition, setCheckmatePosition] = useState<Position | null>(null)
   const [pieces, setPieces] = useState<Piece[]>(pieces_board)
   const [promotionPawn, setPromotionPawn] = useState<Piece | null>(null)
+
   const promotionRef = useRef<HTMLDivElement>(null)
   const referee = new Referee()
   const [board, setBoard] = useState<JSX.Element[]>([])
@@ -56,16 +59,8 @@ export default function ChessBoard({ pieces_board }: Props) {
     if (activePosition) {
       const new_position = new Position(i, j)
       const currentPiece = pieces.find((piece) => piece.position.samePosition(activePosition))
-      // const destinationPiece = pieces.find((piece) => piece.position.samePosition(new Position(i, j)))
-      if (currentPiece) {
-        // const validMove = referee.isValidMove(
-        //   activePosition,
-        //   new_position,
-        //   currentPiece?.type,
-        //   currentPiece?.teamType,
-        //   pieces
-        // )
 
+      if (currentPiece) {
         const validMove = possiblePosition.some((piece) => piece.samePosition(new_position))
 
         // Left: -1, right: 1, no castling: 0
@@ -114,6 +109,8 @@ export default function ChessBoard({ pieces_board }: Props) {
             })
             .then((response) => {
               setCheckmatePosition(null)
+              setWhitePieceCaptured(response.data.captured_pieces.white)
+              setBlackPieceCaptured(response.data.captured_pieces.black)
               if (response.data.result === null) {
                 const newUpdatedPieces = updatedPieces.reduce((result, piece) => {
                   const computer_from_position = new Position(response.data.x_from, response.data.y_from)
@@ -179,6 +176,9 @@ export default function ChessBoard({ pieces_board }: Props) {
             })
             .then((response) => {
               setCheckmatePosition(null)
+              setWhitePieceCaptured(response.data.captured_pieces.white)
+              setBlackPieceCaptured(response.data.captured_pieces.black)
+
               if (response.data.result === null) {
                 const newUpdatedPieces = updatedPieces.reduce((result, piece) => {
                   const computer_from_position = new Position(response.data.x_from, response.data.y_from)
@@ -257,6 +257,8 @@ export default function ChessBoard({ pieces_board }: Props) {
               y_to: new_position.y
             })
             .then((response) => {
+              setWhitePieceCaptured(response.data.captured_pieces.white)
+              setBlackPieceCaptured(response.data.captured_pieces.black)
               setCheckmatePosition(null)
               const newUpdatedPieces = updatedPieces.reduce((result, piece) => {
                 const computer_from_position = new Position(response.data.x_from, response.data.y_from)
@@ -282,6 +284,7 @@ export default function ChessBoard({ pieces_board }: Props) {
               setPieces(newUpdatedPieces)
             })
             .catch(() => {
+              console.log('alooo')
               toast.error('Đã có lỗi xảy ra')
             })
         }

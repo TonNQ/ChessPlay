@@ -40,9 +40,20 @@ interface Props {
   pieces_board: Piece[]
   setWhitePieceCaptured: React.Dispatch<React.SetStateAction<string[]>>
   setBlackPieceCaptured: React.Dispatch<React.SetStateAction<string[]>>
+  setIsUserTurn: React.Dispatch<React.SetStateAction<boolean>>
+  isFinished: boolean
+  setIsFinished: React.Dispatch<React.SetStateAction<boolean>>
+  winner: string
+  setWinner: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBlackPieceCaptured }: Props) {
+export default function ChessBoard({
+  pieces_board,
+  setWhitePieceCaptured,
+  setBlackPieceCaptured,
+  setIsUserTurn,
+  setIsFinished
+}: Props) {
   const [activePosition, setActivePosition] = useState<Position | null>(null)
   const [possiblePosition, setPossiblePosition] = useState<Position[]>([])
   const [castlingPosition, setCastlingPosition] = useState<Position[]>([])
@@ -51,8 +62,13 @@ export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBla
   const [promotionPawn, setPromotionPawn] = useState<Piece | null>(null)
 
   const promotionRef = useRef<HTMLDivElement>(null)
+  // const resultRef = useRef<HTMLDivElement>(null)
   const referee = new Referee()
   const [board, setBoard] = useState<JSX.Element[]>([])
+
+  // if (isFinished) {
+  //   resultRef.current?.classList.remove('hidden')
+  // }
 
   const handleClick = (i: number, j: number) => {
     console.log('checkmate', checkmatePosition)
@@ -90,6 +106,7 @@ export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBla
             return results
           }, [] as Piece[])
           setPieces(updatedPieces)
+          setIsUserTurn(false)
           setCheckmatePosition(null)
 
           const computerKing = updatedPieces.find(
@@ -134,6 +151,10 @@ export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBla
                 }
 
                 setPieces(newUpdatedPieces)
+                if (response.data.is_finished) {
+                  setIsFinished(true)
+                }
+                setIsUserTurn(true)
               }
             })
             .catch(() => {
@@ -157,6 +178,7 @@ export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBla
             return results
           }, [] as Piece[])
           setPieces(updatedPieces)
+          setIsUserTurn(false)
           setCheckmatePosition(null)
 
           const computerKing = updatedPieces.find(
@@ -202,6 +224,11 @@ export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBla
                 }
 
                 setPieces(newUpdatedPieces)
+                if (response.data.is_finished) {
+                  setIsFinished(true)
+                }
+
+                setIsUserTurn(true)
               }
             })
             .catch(() => {
@@ -239,6 +266,7 @@ export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBla
             return results
           }, [] as Piece[])
           setPieces(updatedPieces)
+          setIsUserTurn(false)
           setCheckmatePosition(null)
 
           const computerKing = updatedPieces.find(
@@ -282,9 +310,12 @@ export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBla
               }
 
               setPieces(newUpdatedPieces)
+              if (response.data.is_finished) {
+                setIsFinished(true)
+              }
+              setIsUserTurn(true)
             })
             .catch(() => {
-              console.log('alooo')
               toast.error('Đã có lỗi xảy ra')
             })
         }
@@ -397,6 +428,11 @@ export default function ChessBoard({ pieces_board, setWhitePieceCaptured, setBla
           </div>
         </div>
       </div>
+      {/* <div id='result_modal' className={isFinished ? '' : 'hidden'} ref={resultRef}>
+        <div className='absolute left-1/2 top-1/2 z-10 flex h-[300px] w-[662px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-lg bg-white bg-opacity-70 shadow-md'>
+          {winner === 'Computer' ? 'Computer wins' : 'You win'}
+        </div>
+      </div> */}
       <div role='button' tabIndex={0} id='chess-board'>
         {board}
       </div>

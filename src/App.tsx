@@ -94,12 +94,20 @@ function App() {
   const [initWhitePieceCaptured, setInitWhitePieceCaptured] = useState<string[]>([])
   const [initBlackPieceCaptured, setInitBlackPieceCaptured] = useState<string[]>([])
 
+  const resetStates = () => {
+    setGameId(null)
+    setPieces(initialPieces)
+    setInitWhitePieceCaptured([])
+    setInitBlackPieceCaptured([])
+  }
+
   useEffect(() => {
     const id = getGameIdFromLocalStorage()
     if (id) {
       boardApi
         .findGame(id)
         .then((response) => {
+          resetStates()
           setInitWhitePieceCaptured(response.data.captured_pieces.white)
           setInitBlackPieceCaptured(response.data.captured_pieces.black)
           setPieces(exportPieces(response.data.chess_pieces, response.data.white_moved))
@@ -116,6 +124,7 @@ function App() {
           pieces={pieces}
           initWhitePieceCaptured={initWhitePieceCaptured}
           initBlackPieceCaptured={initBlackPieceCaptured}
+          setGameId={setGameId}
         />
       ) : (
         <Home setGameId={setGameId} />

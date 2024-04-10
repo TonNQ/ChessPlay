@@ -40,6 +40,9 @@ const boardApi = {
   },
   updatePieces(id: string, params: { x_from: number; y_from: number; x_to: number; y_to: number }) {
     return http.put<NextStepPiece>(`/update/${id}/`, params)
+  },
+  deleteBoard(id: string) {
+    return http.delete(`/delete/${id}/`)
   }
 }
 

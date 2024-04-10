@@ -19,10 +19,12 @@ export default class Referee {
 
   isEnPassantMove(old_pos: Position, new_pos: Position, type: PieceType, boardState: Piece[]): boolean {
     if (type === PieceType.PAWN) {
-      if ((old_pos.x === new_pos.x + 1 || old_pos.x === new_pos.x - 1) && old_pos.y - new_pos.y === 1) {
+      console.log('old_pos', old_pos)
+      console.log('new_pos', new_pos)
+      if ((old_pos.x === new_pos.x + 1 || old_pos.x === new_pos.x - 1) && Math.abs(old_pos.y - new_pos.y) === 1) {
         // right or left
         const piece = boardState.find(
-          (piece) => piece.position.x === new_pos.x && old_pos.y === new_pos.y - 1 && piece.enPassant
+          (p) => p.position.x === new_pos.x && Math.abs(old_pos.y - new_pos.y) === 1 && p.enPassant
         )
         if (piece) {
           return true
@@ -252,7 +254,7 @@ export default class Referee {
       possibleMoves.push(upperLeftAttack)
     } else if (!this.tileIsOccupied(upperLeftAttack, boardState)) {
       const leftPiece = boardState.find((p) => p.position.samePosition(leftPosition))
-      if (leftPiece != null && this.isEnPassantMove(pawn.position, leftPosition, PieceType.PAWN, boardState)) {
+      if (leftPiece != null && this.isEnPassantMove(pawn.position, upperLeftAttack, PieceType.PAWN, boardState)) {
         possibleMoves.push(upperLeftAttack)
       }
     }
@@ -261,7 +263,7 @@ export default class Referee {
       possibleMoves.push(upperRightAttack)
     } else if (!this.tileIsOccupied(upperRightAttack, boardState)) {
       const rightPiece = boardState.find((p) => p.position.samePosition(rightPosition))
-      if (rightPiece != null && this.isEnPassantMove(pawn.position, rightPosition, PieceType.PAWN, boardState)) {
+      if (rightPiece != null && this.isEnPassantMove(pawn.position, upperRightAttack, PieceType.PAWN, boardState)) {
         possibleMoves.push(upperRightAttack)
       }
     }

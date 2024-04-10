@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useRef, useState } from 'react'
 import Tile from '../Tile/Tile'
 import './ChessBoard.css'
 import Referee from 'src/referee/referee.ts'
@@ -43,12 +44,15 @@ export default function ChessBoard({ pieces_board }: Props) {
   const [activePosition, setActivePosition] = useState<Position | null>(null)
   const [possiblePosition, setPossiblePosition] = useState<Position[]>([])
   const [castlingPosition, setCastlingPosition] = useState<Position[]>([])
+  const [checkmatePosition, setCheckmatePosition] = useState<Position | null>(null)
   const [pieces, setPieces] = useState<Piece[]>(pieces_board)
   const [promotionPawn, setPromotionPawn] = useState<Piece | null>(null)
   const promotionRef = useRef<HTMLDivElement>(null)
   const referee = new Referee()
+  const [board, setBoard] = useState<JSX.Element[]>([])
 
   const handleClick = (i: number, j: number) => {
+    console.log('checkmate', checkmatePosition)
     if (activePosition) {
       const new_position = new Position(i, j)
       const currentPiece = pieces.find((piece) => piece.position.samePosition(activePosition))
@@ -90,6 +94,17 @@ export default function ChessBoard({ pieces_board }: Props) {
 
             return results
           }, [] as Piece[])
+          setPieces(updatedPieces)
+          setCheckmatePosition(null)
+
+          const computerKing = updatedPieces.find(
+            (piece) => piece.teamType === TeamType.COMPUTERTEAM && piece.type === PieceType.KING
+          )
+
+          if (computerKing && referee.isCheckmate(computerKing, updatedPieces)) {
+            setCheckmatePosition(computerKing.position)
+          }
+
           boardApi
             .updatePieces(getGameIdFromLocalStorage(), {
               x_from: activePosition.x,
@@ -98,6 +113,7 @@ export default function ChessBoard({ pieces_board }: Props) {
               y_to: new_position.y
             })
             .then((response) => {
+              setCheckmatePosition(null)
               if (response.data.result === null) {
                 const newUpdatedPieces = updatedPieces.reduce((result, piece) => {
                   const computer_from_position = new Position(response.data.x_from, response.data.y_from)
@@ -110,6 +126,16 @@ export default function ChessBoard({ pieces_board }: Props) {
                   }
                   return result
                 }, [] as Piece[])
+
+                const playerKing = updatedPieces.find(
+                  (piece) => piece.teamType === TeamType.USERTEAM && piece.type === PieceType.KING
+                )
+
+                if (playerKing && referee.isCheckmate(playerKing, updatedPieces)) {
+                  console.log('checkmate')
+                  setCheckmatePosition(playerKing.position)
+                }
+
                 setPieces(newUpdatedPieces)
               }
             })
@@ -133,6 +159,17 @@ export default function ChessBoard({ pieces_board }: Props) {
             }
             return results
           }, [] as Piece[])
+          setPieces(updatedPieces)
+          setCheckmatePosition(null)
+
+          const computerKing = updatedPieces.find(
+            (piece) => piece.teamType === TeamType.COMPUTERTEAM && piece.type === PieceType.KING
+          )
+
+          if (computerKing && referee.isCheckmate(computerKing, updatedPieces)) {
+            setCheckmatePosition(computerKing.position)
+          }
+
           boardApi
             .updatePieces(getGameIdFromLocalStorage(), {
               x_from: activePosition.x,
@@ -141,6 +178,7 @@ export default function ChessBoard({ pieces_board }: Props) {
               y_to: new_position.y
             })
             .then((response) => {
+              setCheckmatePosition(null)
               if (response.data.result === null) {
                 const newUpdatedPieces = updatedPieces.reduce((result, piece) => {
                   const computer_from_position = new Position(response.data.x_from, response.data.y_from)
@@ -153,6 +191,16 @@ export default function ChessBoard({ pieces_board }: Props) {
                   }
                   return result
                 }, [] as Piece[])
+
+                const playerKing = updatedPieces.find(
+                  (piece) => piece.teamType === TeamType.USERTEAM && piece.type === PieceType.KING
+                )
+
+                if (playerKing && referee.isCheckmate(playerKing, updatedPieces)) {
+                  console.log('checkmate')
+                  setCheckmatePosition(playerKing.position)
+                }
+
                 setPieces(newUpdatedPieces)
               }
             })
@@ -191,6 +239,15 @@ export default function ChessBoard({ pieces_board }: Props) {
             return results
           }, [] as Piece[])
           setPieces(updatedPieces)
+          setCheckmatePosition(null)
+
+          const computerKing = updatedPieces.find(
+            (piece) => piece.teamType === TeamType.COMPUTERTEAM && piece.type === PieceType.KING
+          )
+
+          if (computerKing && referee.isCheckmate(computerKing, updatedPieces)) {
+            setCheckmatePosition(computerKing.position)
+          }
 
           boardApi
             .updatePieces(getGameIdFromLocalStorage(), {
@@ -200,6 +257,7 @@ export default function ChessBoard({ pieces_board }: Props) {
               y_to: new_position.y
             })
             .then((response) => {
+              setCheckmatePosition(null)
               const newUpdatedPieces = updatedPieces.reduce((result, piece) => {
                 const computer_from_position = new Position(response.data.x_from, response.data.y_from)
                 const computer_to_position = new Position(response.data.x_to, response.data.y_to)
@@ -211,8 +269,17 @@ export default function ChessBoard({ pieces_board }: Props) {
                 }
                 return result
               }, [] as Piece[])
+
+              const playerKing = updatedPieces.find(
+                (piece) => piece.teamType === TeamType.USERTEAM && piece.type === PieceType.KING
+              )
+
+              if (playerKing && referee.isCheckmate(playerKing, updatedPieces)) {
+                console.log('checkmate')
+                setCheckmatePosition(playerKing.position)
+              }
+
               setPieces(newUpdatedPieces)
-              console.log(newUpdatedPieces)
             })
             .catch(() => {
               toast.error('Đã có lỗi xảy ra')
@@ -238,35 +305,40 @@ export default function ChessBoard({ pieces_board }: Props) {
 
   console.log('castlingPosition', castlingPosition)
 
-  const board = []
+  useEffect(() => {
+    const newBoard = []
 
-  for (let j = verticalAxis.length - 1; j >= 0; j--) {
-    for (let i = 0; i < horizontalAxis.length; i++) {
-      let image = undefined
+    for (let j = verticalAxis.length - 1; j >= 0; j--) {
+      for (let i = 0; i < horizontalAxis.length; i++) {
+        let image = undefined
 
-      pieces.forEach((piece) => {
-        if (piece.position.x === i && piece.position.y === j) {
-          image = piece.image
-        }
-      })
-      const p = new Position(i, j)
-      const isActive = (activePosition && activePosition.samePosition(p)) as boolean
-      const isHighlight = possiblePosition.some((position) => position.samePosition(p))
-      const isCastling = castlingPosition.some((position) => position.samePosition(p))
-      board.push(
-        <Tile
-          key={`${j},${i}`}
-          number_row={i}
-          number_column={j}
-          image={image}
-          onClick={() => handleClick(i, j)}
-          isActive={isActive}
-          isHighlight={isHighlight}
-          isCastling={isCastling}
-        />
-      )
+        pieces.forEach((piece) => {
+          if (piece.position.x === i && piece.position.y === j) {
+            image = piece.image
+          }
+        })
+        const p = new Position(i, j)
+        const isActive = (activePosition && activePosition.samePosition(p)) as boolean
+        const isHighlight = possiblePosition.some((position) => position.samePosition(p))
+        const isCastling = castlingPosition.some((position) => position.samePosition(p))
+        const isCheckmate = checkmatePosition && checkmatePosition.samePosition(p) ? true : false
+        newBoard.push(
+          <Tile
+            key={`${j},${i}`}
+            number_row={i}
+            number_column={j}
+            image={image}
+            onClick={() => handleClick(i, j)}
+            isActive={isActive}
+            isHighlight={isHighlight}
+            isCastling={isCastling}
+            isCheckmate={isCheckmate}
+          />
+        )
+      }
     }
-  }
+    setBoard(newBoard)
+  }, [activePosition, castlingPosition, checkmatePosition, pieces, possiblePosition])
 
   function promotePawn(pieceType: PieceType) {
     if (promotionPawn === null) {
